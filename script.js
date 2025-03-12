@@ -2,12 +2,12 @@ const canvas = document.getElementById('jogo2D');
 const ctx = canvas.getContext('2d');
 let gameOver = false;
 
-//document.addEventListener('keypress', (e) => {
-    //if (e.code === 'Space' && !personagem.pulando) {
-        //personagem.velocidadey = 12;
-        //personagem.pulando = true;
-    //}
-//});
+
+document.addEventListener('keypress', (e) => {
+    if (e.code === 'Space' && !personagem.pulando) {
+        personagem.saltar()
+    }
+});
 
 class Entidade{
     #gravidade
@@ -30,9 +30,19 @@ class Entidade{
 }
 
 class Personagem extends Entidade{
-    constructor (x,y,altura, largura, velocidadeY){
+    #pulando
+    #velocidadeY
+    constructor (x,y,altura, largura){
         super(x,y,altura, largura)
-        this.velocidadeY = velocidadeY
+        this.#pulando = false
+        this.#velocidadeY = 0
+    }
+    saltar = function(){
+        personagem.#velocidadeY = 12;
+        personagem.#pulando = true;
+    }
+    get pulando() {
+        return this.#pulando
     }
 }
 
