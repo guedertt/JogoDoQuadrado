@@ -32,26 +32,57 @@ class Entidade{
 class Personagem extends Entidade{
     #pulando
     #velocidadeY
-    constructor (x,y,altura, largura){
+    constructor (x,y,largura, altura){
         super(x,y,altura, largura)
         this.#pulando = false
         this.#velocidadeY = 0
     }
     saltar = function(){
-        personagem.#velocidadeY = 12;
-        personagem.#pulando = true;
+        this.#velocidadeY = 12;
+        this.#pulando = true;
     }
     get pulando() {
         return this.#pulando
     }
-}
-
-class Obstaculo extends Entidade{
-    constructor (x,y,altura, largura,velocidadeX){
-        super(x,y, altura, largura)
-        this.velocidadeX = velocidadeX
+    atualizarPersonagem() {
+        if (this.#pulando) {
+            this.#velocidadeY -= this.gravidade;
+            this.y -= this.#velocidadeY 
+            if (this.y >= canvas.height - 50) {
+                this.#velocidadeY = 0
+                this.#pulando = false
+                this.y = canvas.height-50
+            }
+        }
     }
 }
+
+
+class Obstaculo extends Entidade{
+    constructor (x,y,largura, altura,velocidadeX, gravidade){
+        super(x,y, altura, largura, gravidade)
+        this.velocidadeX = velocidadeX
+    }
+    atualizarObstaculo() {
+        this.x -= this.velocidadeX;    
+        if (this.x <= -this.largura) {
+            this.x = canvas.width;
+            this.velocidadeX = Math.min(this.velocidadeX + 1, 10);
+    
+            let nova_altura = Math.random() * 50 + 100;
+            this.altura = nova_altura;
+            this.y = canvas.height - nova_altura;
+        }
+    }
+}
+
+const obstaculo = new Obstaculo(
+    canvas.width, // Começa no lado direito da tela
+    canvas.height - 50, // No chão
+    30, // Largura do obstáculo
+    50, // Altura do obstáculo
+    3 // Velocidade
+)
 
 const personagem = new Personagem
 (
@@ -65,11 +96,10 @@ function loop() {
     if (gameOver == false) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         personagem.desenhar('black')
-        //atualizarPersonagem();
-        //desenharObstaculo();
-        //atualizarObstaculo();
-        //verificarColisao(); // Checa colisão a cada frame
-        requestAnimationFrame(loop);
+        personagem.atualizarPersonagem()
+        obstaculo.desenhar('red')
+        obstaculo.atualizarObstaculo()
+        requestAnimationFrame(loop);       
     }
 }
 
